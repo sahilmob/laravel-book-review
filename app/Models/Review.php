@@ -18,4 +18,16 @@ class Review extends Model
     {
         return $this->belongsTo(Book::class);
     }
+
+    protected static function booted()
+    {
+        static::updated(function (Review $review) {
+            $cacheKey = 'book:' . $review->book_id;
+            cache()->forget($cacheKey);
+        });
+        static::deleted(function (Review $review) {
+            $cacheKey = 'book:' . $review->book_id;
+            cache()->forget($cacheKey);
+        });
+    }
 }
